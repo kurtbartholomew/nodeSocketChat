@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Hello from Chattr</title>
+  <!-- <link rel="stylesheet" href="style.css"> -->
+  <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script> 
+</head>
+<body>
+  <h1>Hello from Chattr</h1>
+  <div id="chatscreen">
+    <div id="chatters"></div>
+    <div id="chatlog">
+<!--       <p>connecting...</p> -->
+    </div>
+  	<form id="chat_form" action="" method="">
+       <input type="text" name="chat_input" id="chat_input">
+       <button type="submit">Submit chat</button>
+    </form>
+  </div>
+
+
+  <script>
+    function insertMessage(data) {
+      $('#chatlog').append('<p>'+data+'</p>');
+    }
+    var socket = io.connect('http://localhost:8000');
+    socket.on('messages', function (data) { insertMessage(data) });
+    $('#chat_form').on('submit',function(e) {
+      var message = $('#chat_input').val();
+      $('#chat_input').val("");
+      socket.emit('messages', message);
+      event.preventDefault();
+    });
+    socket.on('connect', function(data) {
+      //$('#status').html('Connected to chattr');
+      var nickname = prompt("What is your nickname?");
+
+      socket.emit('join', nickname);
+    });
+    socket.on('add chatter', function(name) {
+      var chatter = $('<li>'+name+'</li>').data('name',name);
+      $('#chatters').append(chatter);
+    });
+    socket.on('remove chatter', function(name) {
+      $('#chatters li[data-name='+name+']').remove();
+    });
+
+  </script>
+</body>
+</html>
